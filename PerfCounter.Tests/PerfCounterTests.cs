@@ -9,28 +9,83 @@
     public class PerfCounterTests
     {
         [Test]
-        public void PerfCounterShouldMeasureElapsedTicksWithReasonableAccuracy()
+        public void PerfCounterResultHitCountShouldReturnCorrectCount()
+        {
+            // Arrange.
+            const string counterName = "HitCounterName";
+            PerfCounters.Reset(counterName);
+
+            // Act & Assert.
+            for (var i = 0; i < 10; i++)
+            {
+                using (new PerfCounter(counterName)){}
+
+                Assert.AreEqual(i + 1, PerfCounters.Results[counterName].HitCount);
+            }
+        }
+
+        [Test]
+        public void PerfCounterResultLongestAndShortestPeriodsShouldBeInitializedCorrectly()
         {
             // Arrange.
             const string counterName = "CounterName";
             PerfCounters.Reset(counterName);
 
             // Act.
-            var stopwatch = Stopwatch.StartNew();
             using (new PerfCounter(counterName))
             {
                 Thread.Sleep(100);
             }
-            stopwatch.Stop();
 
             // Assert.
-            var counterElapsedTicks = PerfCounters.Results[counterName].ElapsedTicks;
-            var stopwatchElapsedTicks = stopwatch.Elapsed.Ticks;
+            Assert.AreNotEqual(0, PerfCounters.Results[counterName].ShortestPeriodTicks);
+            Assert.AreNotEqual(0, PerfCounters.Results[counterName].LongestPeriodTicks);
+        }
 
-            Console.WriteLine("Counter ticks: {0}", counterElapsedTicks);
-            Console.WriteLine("Stopwatch ticks: {0}", stopwatchElapsedTicks);
-            
-            Assert.Less(Math.Abs(stopwatchElapsedTicks - counterElapsedTicks), TimeSpan.FromMilliseconds(10).Ticks);
+        [Test]
+        public void PerfCounterResultShouldBeImmutable()
+        {
+            // Arrange.
+            const string counterName = "CounterName";
+
+            // Act.
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(100);
+            }
+
+            var counterResult = PerfCounters.Results[counterName];
+            var elapsedTicks1 = counterResult.ElapsedTicks;
+
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(100);
+            }
+
+            var elapsedTicks2 = counterResult.ElapsedTicks;
+
+            // Assert.
+            Assert.AreEqual(elapsedTicks1, elapsedTicks2);
+        }
+
+        [Test]
+        public void PerfCounterResultShouldCalculateAverageTicksCorrectly()
+        {
+            // Arrange.
+            const string counterName = "CounterName";
+            PerfCounters.Reset(counterName);
+
+            // Act.
+            for (var i = 0; i < 1000; i++)
+            {
+                using (new PerfCounter(counterName))
+                {
+                    Thread.Sleep(TimeSpan.FromMilliseconds(10));
+                }
+            }
+
+            // Assert.
+            Assert.Less(Math.Abs(PerfCounters.Results[counterName].AverageTicks - TimeSpan.FromMilliseconds(10).Ticks), TimeSpan.FromMilliseconds(1.5).Ticks);
         }
 
         [Test]
@@ -56,6 +111,31 @@
             Console.WriteLine("Stopwatch milliseconds: {0}", stopwatchElapsedMilliseconds);
 
             Assert.Less(Math.Abs(stopwatchElapsedMilliseconds - counterElapsedMilliseconds), 10);
+        }
+
+        [Test]
+        public void PerfCounterShouldMeasureElapsedTicksWithReasonableAccuracy()
+        {
+            // Arrange.
+            const string counterName = "CounterName";
+            PerfCounters.Reset(counterName);
+
+            // Act.
+            var stopwatch = Stopwatch.StartNew();
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(100);
+            }
+            stopwatch.Stop();
+
+            // Assert.
+            var counterElapsedTicks = PerfCounters.Results[counterName].ElapsedTicks;
+            var stopwatchElapsedTicks = stopwatch.Elapsed.Ticks;
+
+            Console.WriteLine("Counter ticks: {0}", counterElapsedTicks);
+            Console.WriteLine("Stopwatch ticks: {0}", stopwatchElapsedTicks);
+
+            Assert.Less(Math.Abs(stopwatchElapsedTicks - counterElapsedTicks), TimeSpan.FromMilliseconds(10).Ticks);
         }
 
         [Test]
@@ -86,23 +166,6 @@
             Console.WriteLine("Stopwatch milliseconds: {0}", stopwatchElapsedTicks/TimeSpan.TicksPerMillisecond);
 
             Assert.Less(Math.Abs(stopwatchElapsedTicks - counterElapsedTicks), TimeSpan.FromMilliseconds(10).Ticks);
-        }
-
-        [Test]
-        public void PerfCountersResetShouldResetSpecifiedCounter()
-        {
-            // Arrange.
-            const string counterName = "CounterName";
-
-            // Act.
-            using (new PerfCounter(counterName))
-            {
-                Thread.Sleep(10);
-            }
-            PerfCounters.Reset(counterName);
-
-            // Assert.
-            Assert.AreEqual(0, PerfCounters.Results[counterName].ElapsedTicks);
         }
 
         [Test]
@@ -142,7 +205,7 @@
         }
 
         [Test]
-        public void PerfCounterResultShouldBeImmutable()
+        public void PerfCountersResetShouldResetSpecifiedCounter()
         {
             // Arrange.
             const string counterName = "CounterName";
@@ -150,59 +213,12 @@
             // Act.
             using (new PerfCounter(counterName))
             {
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
-
-            var counterResult = PerfCounters.Results[counterName];
-            var elapsedTicks1 = counterResult.ElapsedTicks;
-
-            using (new PerfCounter(counterName))
-            {
-                Thread.Sleep(100);
-            }
-
-            var elapsedTicks2 = counterResult.ElapsedTicks;
-
-            // Assert.
-            Assert.AreEqual(elapsedTicks1, elapsedTicks2);
-        }
-
-        [Test]
-        public void PerfCounterResultLongestAndShortestPeriodsShouldBeInitializedCorrectly()
-        {
-            // Arrange.
-            const string counterName = "CounterName";
             PerfCounters.Reset(counterName);
 
-            // Act.
-            using (new PerfCounter(counterName))
-            {
-                Thread.Sleep(100);
-            }
-
             // Assert.
-            Assert.AreNotEqual(0, PerfCounters.Results[counterName].ShortestPeriodTicks);
-            Assert.AreNotEqual(0, PerfCounters.Results[counterName].LongestPeriodTicks);
-        }
-
-        [Test]
-        public void PerfCounterResultShouldCalculateAverageTicksCorrectly()
-        {
-            // Arrange.
-            const string counterName = "CounterName";
-            PerfCounters.Reset(counterName);
-
-            // Act.
-            for (var i = 0; i < 1000; i++)
-            {
-                using (new PerfCounter(counterName))
-                {
-                    Thread.Sleep(TimeSpan.FromMilliseconds(10));
-                }
-            }
-
-            // Assert.
-            Assert.Less(Math.Abs(PerfCounters.Results[counterName].AverageTicks - TimeSpan.FromMilliseconds(10).Ticks), TimeSpan.FromMilliseconds(1.5).Ticks);
+            Assert.AreEqual(0, PerfCounters.Results[counterName].ElapsedTicks);
         }
     }
 }

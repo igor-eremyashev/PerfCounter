@@ -6,6 +6,8 @@
     /// <code>
     /// var result = PerfCounters.Results["CounterName"];
     /// 
+    /// var hitCount = result.HitCount;
+    /// 
     /// var elapsedTicks = result.ElapsedTicks;
     /// var elapsedMilliseconds = result.ElapsedMilliseconds;
     /// 
@@ -21,14 +23,12 @@
     /// </summary>
     public class PerfCounterResult
     {
-        private long _hitCount;
-
         internal PerfCounterResult(long elapsedTicks, long hitCount)
         {
             ElapsedTicks = elapsedTicks;
             ShortestPeriodTicks = elapsedTicks;
             LongestPeriodTicks = elapsedTicks;
-            _hitCount = hitCount;
+            HitCount = hitCount;
         }
 
         internal PerfCounterResult()
@@ -36,6 +36,7 @@
         {
         }
 
+        public long HitCount { get; private set; }
 
         public long ElapsedTicks { get; private set; }
 
@@ -62,8 +63,8 @@
         {
             get
             {
-                if (_hitCount == 0) return 0;
-                return ElapsedTicks/_hitCount;
+                if (HitCount == 0) return 0;
+                return ElapsedTicks/HitCount;
             }
         }
 
@@ -85,9 +86,9 @@
         internal void Add(long elapsedTicks)
         {
             ElapsedTicks += elapsedTicks;
+            HitCount++;
             UpdateShortestPeriod(elapsedTicks);
             UpdateLongestPeriod(elapsedTicks);
-            _hitCount++;
         }
 
         private void UpdateShortestPeriod(long elapsedTicks)
