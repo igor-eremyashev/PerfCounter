@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfCounter", "PerfCounter\PerfCounter.csproj", "{A50F5E23-8EDF-44A9-BCB3-A4B05F564933}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfCounter.Tests", "PerfCounter.Tests\PerfCounter.Tests.csproj", "{4C14E3B8-9755-4966-9EAD-19EE7FA2FC6F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A50F5E23-8EDF-44A9-BCB3-A4B05F564933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50F5E23-8EDF-44A9-BCB3-A4B05F564933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50F5E23-8EDF-44A9-BCB3-A4B05F564933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50F5E23-8EDF-44A9-BCB3-A4B05F564933}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C14E3B8-9755-4966-9EAD-19EE7FA2FC6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C14E3B8-9755-4966-9EAD-19EE7FA2FC6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C14E3B8-9755-4966-9EAD-19EE7FA2FC6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C14E3B8-9755-4966-9EAD-19EE7FA2FC6F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
