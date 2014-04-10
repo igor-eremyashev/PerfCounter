@@ -27,6 +27,60 @@
         }
 
         [Test]
+        public void PerfCounterResultInitialPeriodTicksShouldPreserveInitialValue()
+        {
+            // Arrange.
+            const string counterName = "CounterName";
+            PerfCounters.Reset(counterName);
+
+            // Act.
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(10);
+            }
+
+            var initialPeriodTicks1 = PerfCounters.Results[counterName].InitialPeriodTicks;
+
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(10);
+            }
+
+            var initialPeriodTicks2 = PerfCounters.Results[counterName].InitialPeriodTicks;
+
+            // Assert.
+            Assert.AreEqual(initialPeriodTicks1, initialPeriodTicks2);
+        }
+
+        [Test]
+        public void PerfCounterResultLastPeriodTicksShouldReflectLastPeriodValue()
+        {
+            // Arrange.
+            const string counterName = "LastPeriodTicks";
+            PerfCounters.Reset(counterName);
+
+            // Act.
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(10);
+            }
+
+            var lastPeriodTicks1 = PerfCounters.Results[counterName].LastPeriodTicks;
+
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(100);
+            }
+
+            var lastPeriodTicks2 = PerfCounters.Results[counterName].LastPeriodTicks;
+
+            // Assert.
+            Assert.AreNotEqual(lastPeriodTicks1, lastPeriodTicks2);
+            Assert.Less(Math.Abs(lastPeriodTicks1 - TimeSpan.FromMilliseconds(10).Ticks), TimeSpan.FromMilliseconds(1.5).Ticks);
+            Assert.Less(Math.Abs(lastPeriodTicks2 - TimeSpan.FromMilliseconds(100).Ticks), TimeSpan.FromMilliseconds(1.5).Ticks);
+        }
+
+        [Test]
         public void PerfCounterResultLongestAndShortestPeriodsShouldBeInitializedCorrectly()
         {
             // Arrange.
@@ -232,32 +286,6 @@
 
             // Assert.
             Assert.AreEqual(0, PerfCounters.Results[counterName].ElapsedTicks);
-        }
-
-        [Test]
-        public void PerfCounterResultInitialPeriodTicksShouldPreserveInitialValue()
-        {
-            // Arrange.
-            const string counterName = "CounterName";
-            PerfCounters.Reset(counterName);
-
-            // Act.
-            using (new PerfCounter(counterName))
-            {
-                Thread.Sleep(10);
-            }
-
-            var initialPeriodTicks1 = PerfCounters.Results[counterName].InitialPeriodTicks;
-
-            using (new PerfCounter(counterName))
-            {
-                Thread.Sleep(10);
-            }
-
-            var initialPeriodTicks2 = PerfCounters.Results[counterName].InitialPeriodTicks;
-
-            // Assert.
-            Assert.AreEqual(initialPeriodTicks1, initialPeriodTicks2);
         }
     }
 }

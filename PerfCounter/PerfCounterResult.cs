@@ -26,10 +26,12 @@
         internal PerfCounterResult(long elapsedTicks, long hitCount)
         {
             HitCount = hitCount;
+
             ElapsedTicks = elapsedTicks;
             ShortestPeriodTicks = elapsedTicks;
             LongestPeriodTicks = elapsedTicks;
-            InitialPeriodTicks = hitCount;
+            InitialPeriodTicks = elapsedTicks;
+            LastPeriodTicks = elapsedTicks;
         }
 
         internal PerfCounterResult()
@@ -81,6 +83,13 @@
             get { return ConvertTicksToMilliseconds(InitialPeriodTicks); }
         }
 
+        public long LastPeriodTicks { get; private set; }
+
+        public long LastPeriodMilliseconds
+        {
+            get { return ConvertTicksToMilliseconds(LastPeriodTicks); }
+        }
+
         internal static PerfCounterResult Empty
         {
             get { return new PerfCounterResult(); }
@@ -94,6 +103,7 @@
         internal void Add(long elapsedTicks)
         {
             ElapsedTicks += elapsedTicks;
+            LastPeriodTicks = elapsedTicks;
             HitCount++;
             UpdateShortestPeriod(elapsedTicks);
             UpdateLongestPeriod(elapsedTicks);
