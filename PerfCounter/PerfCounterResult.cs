@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// <code>
+    ///     <code>
     /// var result = PerfCounters.Results["CounterName"];
     /// 
     /// var hitCount = result.HitCount;
@@ -25,10 +25,11 @@
     {
         internal PerfCounterResult(long elapsedTicks, long hitCount)
         {
+            HitCount = hitCount;
             ElapsedTicks = elapsedTicks;
             ShortestPeriodTicks = elapsedTicks;
             LongestPeriodTicks = elapsedTicks;
-            HitCount = hitCount;
+            InitialPeriodTicks = hitCount;
         }
 
         internal PerfCounterResult()
@@ -71,6 +72,13 @@
         public long AverageMilliseconds
         {
             get { return ConvertTicksToMilliseconds(AverageTicks); }
+        }
+
+        public long InitialPeriodTicks { get; private set; }
+
+        public long InitialPeriodMilliseconds
+        {
+            get { return ConvertTicksToMilliseconds(InitialPeriodTicks); }
         }
 
         internal static PerfCounterResult Empty

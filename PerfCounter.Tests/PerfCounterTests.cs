@@ -30,7 +30,7 @@
         public void PerfCounterResultLongestAndShortestPeriodsShouldBeInitializedCorrectly()
         {
             // Arrange.
-            const string counterName = "CounterName";
+            const string counterName = "LongestAndShortestPeriods";
             PerfCounters.Reset(counterName);
 
             // Act.
@@ -232,6 +232,32 @@
 
             // Assert.
             Assert.AreEqual(0, PerfCounters.Results[counterName].ElapsedTicks);
+        }
+
+        [Test]
+        public void PerfCounterResultInitialPeriodTicksShouldPreserveInitialValue()
+        {
+            // Arrange.
+            const string counterName = "CounterName";
+            PerfCounters.Reset(counterName);
+
+            // Act.
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(10);
+            }
+
+            var initialPeriodTicks1 = PerfCounters.Results[counterName].InitialPeriodTicks;
+
+            using (new PerfCounter(counterName))
+            {
+                Thread.Sleep(10);
+            }
+
+            var initialPeriodTicks2 = PerfCounters.Results[counterName].InitialPeriodTicks;
+
+            // Assert.
+            Assert.AreEqual(initialPeriodTicks1, initialPeriodTicks2);
         }
     }
 }
