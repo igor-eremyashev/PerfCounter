@@ -21,7 +21,7 @@
     /// var longestPeriodMilliseconds = result.LongestPeriodMilliseconds;
     /// </code>
     /// </summary>
-    public class PerfCounterResult
+    public sealed class PerfCounterResult
     {
         internal PerfCounterResult(long elapsedTicks, long hitCount)
         {
