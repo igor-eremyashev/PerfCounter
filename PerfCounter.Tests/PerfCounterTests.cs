@@ -18,7 +18,9 @@
             // Act & Assert.
             for (var i = 0; i < 10; i++)
             {
-                using (new PerfCounter(counterName)){}
+                using (new PerfCounter(counterName))
+                {
+                }
 
                 Assert.AreEqual(i + 1, PerfCounters.Results[counterName].HitCount);
             }
@@ -166,6 +168,17 @@
             Console.WriteLine("Stopwatch milliseconds: {0}", stopwatchElapsedTicks/TimeSpan.TicksPerMillisecond);
 
             Assert.Less(Math.Abs(stopwatchElapsedTicks - counterElapsedTicks), TimeSpan.FromMilliseconds(10).Ticks);
+        }
+
+        [Test]
+        public void PerfCounterWithoutNameShouldThrowPerfCounterNameNotSpecifiedException()
+        {
+            Assert.Throws<PerfCounterNameNotSpecifiedException>(() =>
+                {
+                    using (new PerfCounter())
+                    {
+                    }
+                });
         }
 
         [Test]

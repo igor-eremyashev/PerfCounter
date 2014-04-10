@@ -36,6 +36,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PerfCounterNameNotSpecifiedException.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="PerfCounter.cs" />
     <Compile Include="PerfCounterResult.cs" />

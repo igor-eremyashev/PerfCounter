@@ -31,6 +31,11 @@
         /// </summary>
         public void Dispose()
         {
+            if (_stopwatch == null)
+            {
+                throw new PerfCounterNameNotSpecifiedException();
+            }
+
             _stopwatch.Stop();
             PerfCounters.Add(_counterName, _stopwatch.Elapsed.Ticks);
         }
